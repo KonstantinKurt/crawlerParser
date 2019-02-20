@@ -3,6 +3,11 @@ const Product = require('../model/product.js');
 const mongoose = require('mongoose');
 const cheerio = require('cheerio');
 
+
+const crawlerArray = require('./crawlerArray.js');
+
+
+
 let getProduct = new Crawler({
     maxConnections: 1,
     //jQuery: false,
@@ -15,6 +20,8 @@ let getProduct = new Crawler({
 
             let resName = $("[itemprop='name']").text();
             let resPrice = $('#j-sku-price').text();
+            //let name = $('h1[data-spm-anchor-id]');
+            
 
             let newProduct = new Product({ _id: new mongoose.Types.ObjectId(), name: resName, price: resPrice });
             //console.log(newProduct);
@@ -48,10 +55,63 @@ let getProduct = new Crawler({
     }
 });
 
+let getReferencesOnProducts = new Crawler({
+    maxConnections: 1,
+    callback: function(err, res, done) {
+
+        if (err) {
+            console.log(err);
+        } else {
+            $ = cheerio.load(res.body);
+            let refferenceOnProduct = $("[itemprop='name']").text();
+            //console.log(refferenceOnProduct);
+            crawlerArray.refferenceArray.push(refferenceOnProduct);
+            
+        };
+
+        done();
+    }
+});
+
+
+let getInfoFromPriceArchieve = new Crawler({
+    maxConnections: 1,
+    function(err, res, done) {
+
+        if (err) {
+            console.log(err);
+        } else {
+            $ = cheerio.load(res.body);
+            let input = $("input[name = q]").val();
+            console.log(input);
+         
+        };
+
+        done();
+    }
 
 
 
+});
 
-module.exports = function(arr) {
+let getPriceArchiveInfo = function(){
+    getInfoFromPriceArchieve.queue('https://www.pricearchive.org/aliexpress.com/item/32881445343');
+};
+
+
+let getRefferences = function(arr){
+   getReferencesOnProducts.queue(arr);
+};
+let getProducts = function(arr){
     getProduct.queue(arr);
+};
+
+
+
+
+module.exports =  {
+	getPriceArchiveInfo: getPriceArchiveInfo,
+	getProducts: getProducts,
+	getRefferences: getRefferences,
+    
 };
