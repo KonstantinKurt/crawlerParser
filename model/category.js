@@ -3,14 +3,18 @@ const Schema = mongoose.Schema;
 const Crawler = require('crawler');
 const cheerio = require('cheerio');
 
-
-
 const categorySchema = new Schema({
     name: {
-        type:String,
+        type: String,
+        require: true,
     },
-    url:{
-         type:String,
+    url: {
+        type: String,
+        require: true,
+    },
+    originalID: {
+        type: String,
+        require: true,
     },
 }, { versionKey: false });
 module.exports = mongoose.model('Category', categorySchema);

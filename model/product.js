@@ -4,13 +4,23 @@ const Schema = mongoose.Schema;
 
 const contentSchema = new Schema({
     refference: {
-        type:String,
+        type: String,
+        require: true,
     },
     name: {
-        type:String,
+        type: String,
+        require: true,
     },
-    // price:{
-    //      type:String,
-    // },
+    price: {
+        type: String,
+        require: true,
+    },
+    lastParsed: {
+        type: String,
+        default: new Date(),
+    },
+    image: {
+        type: String,
+    },
 }, { versionKey: false });
 module.exports = mongoose.model('Product', contentSchema);
