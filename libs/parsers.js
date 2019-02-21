@@ -3,7 +3,7 @@ const Product = require('../model/product.js');
 const mongoose = require('mongoose');
 const cheerio = require('cheerio');
 const Category = require('../model/category.js');
-
+const crawlerArray = require('./crawlerArray.js');
 
 let getCategories = new Crawler({
     maxConnections: 1,
@@ -24,6 +24,7 @@ let getCategories = new Crawler({
                         return res.status(500).send("There was a problem to find category in DB.");
                     }
                     if (!category) {
+                        crawlerArray.categoryArray.push(category);
                         newCategory.save(function(err) {
                             if (err) {
                                 return console.log(err);
@@ -47,14 +48,17 @@ let getProducts = new Crawler({
             console.log(err);
         } else {
             $ = cheerio.load(res.body);
-            $('. product j-p4plog').each(function() {
+            
+            // Найти ссылки по item
+
+            $('. product ').each(function() {
                 let productName = $(this).attr('href');
                 let newProduct = new Product({ _id: new mongoose.Types.ObjectId(), name: productName});
                 newProduct.save(function(err) {
                     if (err) {
                         return console.log(err);
                     }
-                    console.log(newProduct.name, 'saved');
+                    //console.log(newProduct.name, 'saved');
                 });
 
             });
