@@ -48,9 +48,6 @@ let getProducts = new Crawler({
             console.log(err);
         } else {
             $ = cheerio.load(res.body);
-            
-            // Найти ссылки по item
-
             // $('. product ').each(function() {
             //     let productName = $(this).attr('href');
             //     let newProduct = new Product({ _id: new mongoose.Types.ObjectId(), name: productName});
