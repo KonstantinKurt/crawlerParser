@@ -6,7 +6,6 @@ const Crawler = require('crawler');
 const cheerio = require('cheerio');
 
 const Product = require('./model/product.js');
-const crawlerArray = require('./libs/crawlerArray.js');
 const crawler = require('./libs/crawlerAE.js');
 const config = require('./config.js');
 
