@@ -51,16 +51,35 @@ let getProducts = new Crawler({
             
             // Найти ссылки по item
 
-            $('. product ').each(function() {
-                let productName = $(this).attr('href');
-                let newProduct = new Product({ _id: new mongoose.Types.ObjectId(), name: productName});
-                newProduct.save(function(err) {
-                    if (err) {
-                        return console.log(err);
-                    }
-                    //console.log(newProduct.name, 'saved');
-                });
+            // $('. product ').each(function() {
+            //     let productName = $(this).attr('href');
+            //     let newProduct = new Product({ _id: new mongoose.Types.ObjectId(), name: productName});
+            //     newProduct.save(function(err) {
+            //         if (err) {
+            //             return console.log(err);
+            //         }
+            //         //console.log(newProduct.name, 'saved');
+            //     });
 
+            // });
+            $('a[href*="aliexpress.com/item/"][class*=" product"]').each(function() {
+                let productRefference= $(this).attr('href');
+                console.log(productRefference);
+                let productName= $(this).attr('title');
+                console.log(productName);
+                let newProduct = new Product({ _id: new mongoose.Types.ObjectId(), refference: productRefference, name: productName, });
+                Product.findOne({ name: newProduct.name }, function(err, product) {
+                    if (err) {
+                        return res.status(500).send("There was a problem to find product in DB.");
+                    }
+                    if (!product) {
+                        newProduct.save(function(err) {
+                            if (err) {
+                                return console.log(err);
+                            }
+                        });
+                    }
+                });
             });
 
         };

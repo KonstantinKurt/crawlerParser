@@ -3,6 +3,9 @@ const Schema = mongoose.Schema;
 
 
 const contentSchema = new Schema({
+    refference: {
+        type:String,
+    },
     name: {
         type:String,
     },
