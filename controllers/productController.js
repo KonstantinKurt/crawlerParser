@@ -7,7 +7,7 @@ const crawlerData = require('../libs/crawlerArray.js');
 
 module.exports = {
 
-    getByCategory: function(req, res) {
+    parseByCategory: function(req, res) {
         let id = req.params.id;
         Category.findById({ _id: id }, (err, category) => {
             err && res.status(404).send("There was a problem with searching categories in DB.");
@@ -22,22 +22,40 @@ module.exports = {
 
     },
 
-    getAllProducts: function(req, res) {
+    parseAllProducts: function(req, res) {
         Category.find({}, (err, categories) => {
             err && res.status(404).send("There was a problem with searching categories in DB.");
             //console.log(categories);
             for (let i = 0; i < categories.length; i++) {
-                crawlerData.productQueryArray.push(`https:${categories[i].url}`);
+                crawlerData.productQueryArray.push(`https:${categories[i].url}`);  
                 for (let j = 0; j < crawlerData.pagination; j++) {
                     crawlerData.productQueryArray.push(`https:${categories[i].url}`.slice(0, -5) + `/${j}.html`);
                 }
             }
-            console.log(crawlerData.productQueryArray);
+            //console.log(crawlerData.productQueryArray);
             parsers.getProducts.queue(crawlerData.productQueryArray);
         });
 
     },
 
+    getAllProducts: function(req, res) {
+        Product.find({}, (err, products) => {
+            err && res.status(404).send("There was a problem with searching products in DB.");
+            res.json({ status: "success", message: "All products in DB", data: products });
+        });
+    },
+    
+     getProductHistory: function(req, res) {
+       let id = req.params.id;
+       Product.findById({ _id: id }, (err, product) => {
+            err && res.status(404).send("There was a problem with searching categories in DB.");
+            let stringToParse = `https://www.pricearchive.org/aliexpress.com/item/${product.refference.split("/")[5].substring(0,11)}`;
+            console.log(stringToParse);
+            parsers.getProductInfo.queue(stringToParse);
+
+
+        });
+    },
 
 
 

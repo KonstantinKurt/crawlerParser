@@ -12,9 +12,7 @@ module.exports = {
     },
     getAllCategories: function(req, res) {
        Category.find({}, (err, categories) => {
-            if (err) {
-                return res.status(500).send("There was a problem with searching posts in DB.")
-            }
+            err && res.status(404).send("There was a problem with searching categories in DB.");
             res.json({ status: "success", message: "All categories in DB", data: categories });
         });
 

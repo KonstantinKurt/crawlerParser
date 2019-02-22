@@ -17,9 +17,9 @@ let getCategories = new Crawler({
             console.log(`Category ${methods.splitUrl(link,'name')} added to DB`);
             let newCategory = new Category({
                 _id: new mongoose.Types.ObjectId(),
-                name: methods.splitUrl(link,'name'),
+                name: methods.splitUrl(link, 'name'),
                 url: link,
-                originalID: methods.splitUrl(link,'id'),
+                originalID: methods.splitUrl(link, 'id'),
             });
             Category.findOne({ url: newCategory.url }, function(err, category) {
                 err && res.status(404).send(`There was a problem to find category in DB.`);
@@ -33,7 +33,7 @@ let getCategories = new Crawler({
                 }
             });
         });
-    done();
+        done();
     }
 });
 
@@ -45,7 +45,7 @@ let getProducts = new Crawler({
         $('li[class*="list-item"]').each(function() {
             let newProduct = new Product({
                 _id: new mongoose.Types.ObjectId(),
-                refference: $('a[href*="aliexpress.com/item/"][class*=" product"]').attr('href'),
+                refference: `https:${$('a[href*="aliexpress.com/item/"][class*=" product"]').attr('href')}`,
                 name: $('a[href*="aliexpress.com/item/"][class*=" product"]').attr('title'),
                 price: $("[itemprop='price']").text(),
                 image: $('img[class*="picCore pic-Core-v"]').attr('src'),
@@ -65,8 +65,27 @@ let getProducts = new Crawler({
     }
 });
 
+let getProductInfo = new Crawler({
+    maxConnections: 1,
+    callback: function(err, res, done) {
+        err && console.log(err);
+        $ = cheerio.load(res.body);
+        let name = $('h1').text();
+        let currentPrice = $('table[class*="adaptive"] tr').find('td:contains($)').text().slice(1);
+        let priceHistory = [];
+        $(".pcex table tr").each(function() {
+            console.log(`date ${ $(this).find("td").eq(0).text()}  price ${$(this).find("td").eq(1).text()}`);
+        });
+        console.log(`Name          ${name}`);
+        console.log(`CurrentPrice          ${currentPrice}`);
+        console.log(`History ${priceHistory}`);
+        done();
+    }
+});
+
 
 module.exports = {
     getCategories: getCategories,
     getProducts: getProducts,
+    getProductInfo: getProductInfo,
 };
