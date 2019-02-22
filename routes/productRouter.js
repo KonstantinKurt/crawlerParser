@@ -9,6 +9,7 @@ const config = require('../config');
 
 
 router.get('/products/:id',productController.getByCategory); 
+router.get('/products',productController.getAllProducts); 
 
 
 
