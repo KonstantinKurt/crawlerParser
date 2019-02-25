@@ -22,5 +22,11 @@ const contentSchema = new Schema({
     image: {
         type: String,
     },
+    history: {
+       type: Array,
+       default: [],
+    }, 
+        
+    ,
 }, { versionKey: false });
 module.exports = mongoose.model('Product', contentSchema);

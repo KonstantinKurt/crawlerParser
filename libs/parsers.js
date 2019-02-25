@@ -42,25 +42,25 @@ let getProducts = new Crawler({
     callback: function(err, res, done) {
         err && console.log(err);
         $ = cheerio.load(res.body);
-        $('li[class*="list-item"]').each(function() {
             let newProduct = new Product({
                 _id: new mongoose.Types.ObjectId(),
-                refference: `https:${$('a[href*="aliexpress.com/item/"][class*=" product"]').attr('href')}`,
-                name: $('a[href*="aliexpress.com/item/"][class*=" product"]').attr('title'),
+                refference: `https:${$('div[class*=" "] a[href*="aliexpress.com/item/"][class*="product"]').attr('href')}`,
+                name: $('a[href*="aliexpress.com/item/"][class*="product"]').attr('title'),
                 price: $("[itemprop='price']").text(),
                 image: $('img[class*="picCore pic-Core-v"]').attr('src'),
                 lastParsed: new Date,
             });
-            console.log(`Product ${newProduct.refference} added to DB`);
-            Product.findOne({ name: newProduct.name }, function(err, product) {
+            
+            Product.findOne({ refference: newProduct.refference }, function(err, product) {
                 err && res.status(404).send(`There was a problem to find product in DB.`);
                 if (!product) {
                     newProduct.save(function(err) {
                         err && console.log(err);
+                        console.log(`Product ${newProduct.refference} added to DB`);
                     });
                 }
             });
-        });
+        
         done();
     }
 });
@@ -74,18 +74,58 @@ let getProductInfo = new Crawler({
         let currentPrice = $('table[class*="adaptive"] tr').find('td:contains($)').text().slice(1);
         let priceHistory = [];
         $(".pcex table tr").each(function() {
-            console.log(`date ${ $(this).find("td").eq(0).text()}  price ${$(this).find("td").eq(1).text()}`);
+            priceHistory.push({
+                'date': $(this).find("td").eq(0).text(),
+                'price': $(this).find("td").eq(1).text(),
+            });
         });
+        let newProduct = new Product({
+             
+        });
+        // Product.findOne({}, function(err,product){
+        //     err && res.status(404).send(`There was a problem to find product in DB.`);
+
+        // });
         console.log(`Name          ${name}`);
         console.log(`CurrentPrice          ${currentPrice}`);
-        console.log(`History ${priceHistory}`);
+        console.log(JSON.stringify(priceHistory));
         done();
     }
 });
+
+let getProductsHistory = new Crawler({
+    maxConnections: 1,
+    callback: function(err, res, done) {
+        err && console.log(err);
+        $ = cheerio.load(res.body);
+        let name = $('h1').text();
+        let currentPrice = $('table[class*="adaptive"] tr').find('td:contains($)').text().slice(1);
+        let priceHistory = [];
+        $(".pcex table tr").each(function() {
+            priceHistory.push({
+                'date': $(this).find("td").eq(0).text(),
+                'price': $(this).find("td").eq(1).text(),
+            });
+        });
+        let newProduct = new Product({
+             
+        });
+        //ADD UPDATE MANY;
+        console.log(`Name          ${name}`);
+        console.log(`CurrentPrice          ${currentPrice}`);
+        console.log(JSON.stringify(priceHistory));
+        done();
+    }
+});
+
+
+
+
 
 
 module.exports = {
     getCategories: getCategories,
     getProducts: getProducts,
     getProductInfo: getProductInfo,
+    getProductsHistory: getProductsHistory,
 };

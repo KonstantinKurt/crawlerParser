@@ -16,7 +16,7 @@ router.get('/product',productController.getAllProducts);
 router.get('/product/:id',productController.getProductHistory);
 
 
-
+router.get('/productsHistory',productController.getProductsHistory);
 
 
 ///////////////////////////////////////////////////////////////////////////////////////
