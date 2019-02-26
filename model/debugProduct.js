@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 
-const contentSchema = new Schema({
+const debugSchema = new Schema({
     refference: {
         type: String,
         require: true,
@@ -29,10 +29,10 @@ const contentSchema = new Schema({
         type: Array,
         default: [],
     },
-    // cheerio: {
-    //     type: String,
-    //     default: "",
-    // },
-
+    cheerio: {
+       type: String,
+       default: "",
+    },
+    
 }, { versionKey: false });
-module.exports = mongoose.model('Product', contentSchema);
+module.exports = mongoose.model('debugProduct', debugSchema);

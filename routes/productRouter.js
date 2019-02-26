@@ -13,10 +13,25 @@ router.get('/products',productController.parseAllProducts);
 
 
 router.get('/product',productController.getAllProducts);
+
+router.get('/productsInfo',productController.getProductInfo); 
+
 router.get('/product/:id',productController.getProductHistory);
 
+ 
 
-router.get('/productsHistory',productController.getProductsHistory);
+
+
+
+
+ // router.get('/getProductsForDebug',productController.getProductsForDebug);
+
+
+// router.get('/productsHistory',productController.getProductsHistory);
+
+
+// router.get('/refferences',productController.getRefferences);
+// router.get('/productsInfo',productController.getProductsFullInfo);
 
 
 ///////////////////////////////////////////////////////////////////////////////////////
