@@ -2,15 +2,16 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const parsers = require('./libs/parsers.js');
 const Crawler = require('crawler');
 const cheerio = require('cheerio');
 const logger = require('morgan');
 const Sequelize = require('sequelize');
+const cron = require('node-cron');
 
 const Product = require('./model/product.js');
 const crawler = require('./libs/crawlerAE.js');
 const config = require('./config.js');
+const parsers = require('./libs/parsers.js');
 
 const AliExpressSpider = require('aliexpress');
 
@@ -24,9 +25,22 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/', categoryRouter);
 app.use('/', productRouter);
 
+async function updateDB() {
+    Product.find({}, (err, products) => {
+        err && res.status(404).send("There was a problem with searching categories in DB.");
+        for (let i = 0; i < products.length; i++) {
+            crawlerData.productQueryArray.push(`https://www.pricearchive.org/aliexpress.com/item/${products[i].refference.split("/")[5].substring(0,11)}`);
+        };
+        parsers.getProductInfo.queue(crawlerData.productQueryArray);
+    });
+    //console.log(`doing something`);
+};
 
-
-
+cron.schedule('* * 1 * *', () => {
+    updateDB().then(() => {
+        console.log('DataBase updated succsesfully!(1 hour cron)');
+    });
+});
 
 
 
@@ -39,7 +53,7 @@ app.use('/', productRouter);
 
 
 app.get('/', (req, res) => {
-    res.send('Works OK');
+    res.send('Crawler Parser');
 
 });
 // const sequelize = new Sequelize('AEdb', 'cubex', 'cubex', {
@@ -189,31 +203,3 @@ mongoose.connect(config.DBconnectionString, { useNewUrlParser: true }, function(
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

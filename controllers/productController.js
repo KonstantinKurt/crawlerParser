@@ -32,7 +32,7 @@ module.exports = {
                     crawlerData.productQueryArray.push(`https:${categories[i].url}`.slice(0, -5) + `/${j}.html`);
                 }
             }
-           parsers.getProducts.queue(crawlerData.productQueryArray);
+            parsers.getProducts.queue(crawlerData.productQueryArray);
         });
 
     },
@@ -57,24 +57,24 @@ module.exports = {
             err && res.status(404).send("There was a problem with searching categories in DB.");
 
             for (let i = 0; i < products.length; i++) {
-                 crawlerData.productQueryArray.push(`https://www.pricearchive.org/aliexpress.com/item/${products[i].refference.split("/")[5].substring(0,11)}`);
-                 // console.log(`https://www.pricearchive.org/aliexpress.com/item/${products[i].refference.split("/")[5].substring(0,11)}`);
-                 // console.log(i);
+                crawlerData.productQueryArray.push(`https://www.pricearchive.org/aliexpress.com/item/${products[i].refference.split("/")[5].substring(0,11)}`);
+                // console.log(`https://www.pricearchive.org/aliexpress.com/item/${products[i].refference.split("/")[5].substring(0,11)}`);
+                // console.log(i);
             };
-            //console.log(crawlerData.productQueryArray.length);
+            console.log(crawlerData.productQueryArray.length);
             //console.log(crawlerData.productQueryArray);
             parsers.getProductInfo.queue(crawlerData.productQueryArray);
         });
     },
-    
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
 
     //  getProductsForDebug: function(req, res) {
     //     Product.find({}, (err, products) => {
     //         err && res.status(404).send("There was a problem with searching products in DB.");
     //         for (let i = 25; i < 35; i++) {
     //             crawlerData.productQueryArray.push(`https://www.pricearchive.org/aliexpress.com/item/${products[i].refference.split("/")[5].substring(0,11)}`);
-                
+
     //         };
     //         console.log(crawlerData.productQueryArray);
     //         parsers.getProductsForDebug.queue(crawlerData.productQueryArray);

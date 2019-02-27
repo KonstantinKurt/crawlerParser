@@ -29,10 +29,10 @@ const contentSchema = new Schema({
         type: Array,
         default: [],
     },
-    // cheerio: {
-    //     type: String,
-    //     default: "",
-    // },
+    parsedHTML: {
+        type: String,
+        default: "",
+    },
 
 }, { versionKey: false });
 module.exports = mongoose.model('Product', contentSchema);

@@ -10,6 +10,7 @@ const debugProduct = require('../model/debugProduct.js');
 
 let getCategories = new Crawler({
     maxConnections: 1,
+    rateLimit: 1000,
     callback: function(err, res, done) {
         err && console.log(err);
         $ = cheerio.load(res.body);
@@ -40,6 +41,7 @@ let getCategories = new Crawler({
 
 let getProducts = new Crawler({
     maxConnections: 1,
+    rateLimit: 1000,
     callback: function(err, res, done) {
         err && console.log(err);
         $ = cheerio.load(res.body);
@@ -68,8 +70,15 @@ let getProducts = new Crawler({
         done();
     }
 });
+getProducts.on('schedule',function(options){
+    options.rateLimit = 1000;
+    options.proxy = "http://5.79.113.168:3128";
+});
+
+
 let getProductById = new Crawler({
     maxConnections: 1,
+    rateLimit: 1000,
     callback: function(err, res, done) {
         err && console.log(err);
         $ = cheerio.load(res.body);
@@ -98,6 +107,7 @@ let getProductById = new Crawler({
 
 let getProductInfo = new Crawler({
     maxConnections: 1,
+    rateLimit: 1000,
     callback: function(err, res, done) {
         err && console.log(err);
         $ = cheerio.load(res.body);
@@ -110,15 +120,17 @@ let getProductInfo = new Crawler({
                 'price': $(this).find("td").eq(1).text(),
             });
         });
-        console.log(this.uri.split("/")[5].substring(0, 11));
-        console.log(newName);
-        console.log(currentPrice);
+        // console.log(this.uri.split("/")[5].substring(0, 11));
+        // console.log(newName);
+        // console.log(currentPrice);
+        console.log(typeof(cheerio.load(res.body)));
+         console.log(cheerio.load(res.body));
         Product.findOne({ originalId: this.uri.split("/")[5].substring(0, 11) }, function(err, product) {
             err && res.status(404).send(`There was a problem to find product in DB.`);
             product.name = newName;
             product.price = currentPrice;
             product.history = priceHistory;
-            //cheerio = $;
+            //parsedHTML = cheerio.load(res.body);
             product.save(function(err) {
                 err && console.log(err);
                 console.log(`Product ${product.name} updated`);
@@ -128,6 +140,11 @@ let getProductInfo = new Crawler({
         });
 
     }
+});
+
+getProductInfo.on('schedule',function(options){
+    options.rateLimit = 1000;
+    options.proxy = "http://94.244.44.67:59374";
 });
 
 
