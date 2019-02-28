@@ -12,6 +12,7 @@ const Product = require('./model/product.js');
 const crawler = require('./libs/crawlerAE.js');
 const config = require('./config.js');
 const parsers = require('./libs/parsers.js');
+const updateDB = require('./libs/cron.js');
 
 const AliExpressSpider = require('aliexpress');
 
@@ -25,16 +26,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/', categoryRouter);
 app.use('/', productRouter);
 
-async function updateDB() {
-    Product.find({}, (err, products) => {
-        err && res.status(404).send("There was a problem with searching categories in DB.");
-        for (let i = 0; i < products.length; i++) {
-            crawlerData.productQueryArray.push(`https://www.pricearchive.org/aliexpress.com/item/${products[i].refference.split("/")[5].substring(0,11)}`);
-        };
-        parsers.getProductInfo.queue(crawlerData.productQueryArray);
-    });
-    //console.log(`doing something`);
-};
+
 
 cron.schedule('* * 1 * *', () => {
     updateDB().then(() => {
@@ -81,7 +73,7 @@ app.get('/', (req, res) => {
 //     .catch(err => {
 //         console.error('Unable to connect to the database:', err);
 //     });
-//https://www.pricearchive.org/aliexpress.com/item/32967585964
+
 
 
 mongoose.connect(config.DBconnectionString, { useNewUrlParser: true }, function(err) {
@@ -95,111 +87,3 @@ mongoose.connect(config.DBconnectionString, { useNewUrlParser: true }, function(
     });
 });
 
-
-
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-// crawler.getRefferences(crawlerArray.getArrToFindRefferenceOnPage());
-// setTimeout(function(){console.log(crawlerArray.getRefferencesArray())}, 5000);
-
-//crawler.getProducts(crawlerArray.getArray());
-// Product.find({}, (err, products) => {
-//     if (err) {
-//         return res.status(500).send("There was a problem with searching posts in DB.")
-//     }
-//    console.log('All products in DB');
-//    console.log(products);
-// });
-
-//crawler.getPriceArchiveInfo();
-
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-// AliExpressSpider.Search({
-//   keyword: 'sony',
-//   page: 2
-// }).then(function(d){
-//    console.log('d', d)
-// });
-// let arrUrl = crawlerArray.getArray();
-// //console.log(arrUrl);
-// let arrProductId = [];
-// let queveArr = [];
-// for (let i = 0; i < arrUrl.length; i++) {
-//     AliExpressSpider.Detail(arrUrl[i])
-//         .then(function(detail) {
-//                 //console.log('good detail', detail);
-//                 //console.log(detail.productId);
-//                 arrProductId.push(detail.productId);
-//                 queveArr.push('https://www.pricearchive.org/aliexpress.com/item/' + detail.productId);
-//             },
-//             function(reason) {
-//                 //console.log(reason);
-//             });
-// };
-
-
-
-// setTimeout(function() { console.log(arrProductId); }, 10000);
-
-// setTimeout(function() { console.log(queveArr); }, 11000);
-
-
-
-// let getArchiveInfo = new Crawler({
-//     maxConnections: 10,
-//     //jQuery: false,
-//     callback: function(err, res, done) {
-
-//         if (err) {
-//             console.log(err);
-//         } else {
-//             $ = cheerio.load(res.body);
-
-//             let resName = $("h1").text();
-//             let resPrice = $("td:contains('US')").text();
-//             console.log(resName);
-//             console.log(resPrice);
-//             let newProduct = new Product({ _id: new mongoose.Types.ObjectId(), name: resName, price: resPrice });
-//             Product.findOne({ name: newProduct.name }, function(err, product) {
-//                 if (err) {
-//                     return res.status(500).send("There was a problem to find product in DB.");
-//                 }
-//                 if (!product) {
-//                     newProduct.save(function(err) {
-//                         if (err) {
-//                             return console.log(err);
-//                         }
-//                     });
-//                 } else {
-//                     if (product.price != newProduct.price) {
-//                         let id = product._id;
-//                         Product.findOneAndUpdate(id, { price: newProduct.price }, function(err, user) {
-//                             if (err) {
-//                                 return console.log(err);
-//                             }
-//                         });
-//                     }
-//                 }
-//             });
-
-
-//         };
-
-//         done();
-//     }
-// });
-
-
-// setTimeout(function() { getArchiveInfo.queue(queveArr); }, 15000);
-
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

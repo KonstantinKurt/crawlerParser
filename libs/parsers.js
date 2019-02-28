@@ -6,8 +6,7 @@ const Category = require('../model/category.js');
 const Product = require('../model/product.js');
 const crawlerArray = require('./crawlerArray.js');
 const methods = require('./methods');
-const debugProduct = require('../model/debugProduct.js');
-
+//Parses product categories from AE 
 let getCategories = new Crawler({
     maxConnections: 1,
     rateLimit: 1000,
@@ -38,7 +37,7 @@ let getCategories = new Crawler({
         done();
     }
 });
-
+// Parses all products from AE by product category
 let getProducts = new Crawler({
     maxConnections: 1,
     rateLimit: 1000,
@@ -70,6 +69,7 @@ let getProducts = new Crawler({
         done();
     }
 });
+// Proxy for all products from AE
 getProducts.on('schedule',function(options){
     options.rateLimit = 1000;
     options.proxy = "http://5.79.113.168:3128";
@@ -104,8 +104,8 @@ let getProductById = new Crawler({
 
 
 
-
-let getProductInfo = new Crawler({
+//Updates products by parsing pricearchive.org
+let getProductsUpdate = new Crawler({
     maxConnections: 1,
     rateLimit: 1000,
     callback: function(err, res, done) {
@@ -141,8 +141,7 @@ let getProductInfo = new Crawler({
 
     }
 });
-
-getProductInfo.on('schedule',function(options){
+getProductsUpdate.on('schedule',function(options){
     options.rateLimit = 1000;
     options.proxy = "http://94.244.44.67:59374";
 });
@@ -151,140 +150,11 @@ getProductInfo.on('schedule',function(options){
 
 
 
-
-
-
-
-
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////
-// let getProductsForDebug = new Crawler({
-//     maxConnections: 1,
-//     callback: function(err, res, done) {
-//         err && console.log(err);
-//         $ = cheerio.load(res.body);
-//         let newName = $('h1').text();
-//         let currentPrice = $('table[class*="adaptive"] tr').find("td").eq(3).text().slice(1);
-//         let priceHistory = [];
-//         $(".pcex table tr").each(function() {
-//             priceHistory.push({
-//                 'date': $(this).find("td").eq(0).text(),
-//                 'price': $(this).find("td").eq(1).text(),
-//             });
-//         });
-//         console.log(this.uri.split("/")[5].substring(0, 11));
-//         console.log(currentPrice);
-//         let newDebugProduct = new debugProduct({
-//             name: newName,
-//             price: currentPrice,
-//             history: priceHistory,
-//             cheerio: $,
-//         });
-//         debugProduct.findOne({ name: newDebugProduct.name }, function(err, product) {
-//             err && res.status(404).send(`There was a problem to find product in DB.`);
-//             if (!product) {
-//                 newDebugProduct.save(function(err) {
-//                     err && console.log(err);
-//                     console.log(newProduct.originalId);
-//                     console.log(`Product ${newDebugProduct.name} updated`);
-//                 });
-//             }
-//         });
-//         done();
-//     }
-// });
-
-
-
-
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-
-
-
-
-
-
-// let getRefferences = new Crawler({
-//     maxConnections: 1,
-//     callback: function(err, res, done) {
-//         err && console.log(err);
-//         $ = cheerio.load(res.body);
-//         let newRefference = new Refference({
-//             _id: new mongoose.Types.ObjectId(),
-//             refference: `https:${$('div[class*=" "] a[href*="aliexpress.com/item/"][class*="product"]').attr('href')}`,
-//             image: $('img[class*="picCore pic-Core-v"]').attr('src'),
-//         });
-
-//         Refference.findOne({ refference: newRefference.refference }, function(err, product) {
-//             err && res.status(404).send(`There was a problem to find product in DB.`);
-//             if (!product) {
-//                 newRefference.save(function(err) {
-//                     err && console.log(err);
-//                     console.log(`New refference ${newRefference.refference} added to DB`);
-//                 });
-//             }
-//         });
-
-//         done();
-//     }
-// });
-
-// let getProductsFullInfo = new Crawler({
-//     maxConnections: 1,
-//     callback: function(err, res, done) {
-//         err && console.log(err);
-//         $ = cheerio.load(res.body);
-//         let name = $('h1').text();
-//         let currentPrice = $('table[class*="adaptive"] tr').find('td:contains($)').text().slice(1);
-//         let priceHistory = [];
-//         $(".pcex table tr").each(function() {
-//             priceHistory.push({
-//                 'date': $(this).find("td").eq(0).text(),
-//                 'price': $(this).find("td").eq(1).text(),
-//             });
-//         });
-//         let lastParsed = new Date();
-//         let refference = this.uri;
-//         Refference.findOne({ refference: this.uri }, function(err, ref) {
-//             err && res.status(404).send(`There was a problem to find product in DB.`);
-//             let newProduct = new Product({
-//                 _id: new mongoose.Types.ObjectId(),
-//                 refference: ref.refference,
-//                 name: name,
-//                 price: currentPrice,
-//                 image: ref.image,
-//                 history: JSON.stringify(priceHistory),
-//             });
-//             newProduct.save(function(err) {
-//                 err && console.log(err);
-//                 console.log(`New refference ${newRefference.refference} added to DB`);
-//             });
-//         });
-//         done();
-//     }
-// });
-
-
-
-
-
 module.exports = {
     getCategories: getCategories,
     getProducts: getProducts,
-    getProductInfo: getProductInfo,
+    getProductsUpdate: getProductsUpdate,
     getProductById: getProductById,
-    // getProductsForDebug: getProductsForDebug,
+    
 
 };

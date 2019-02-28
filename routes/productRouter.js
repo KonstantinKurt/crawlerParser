@@ -7,32 +7,20 @@ const config = require('../config');
 
 
 
-
+// Parses one product by category
 router.get('/products/:id',productController.parseByCategory); 
+// Parses all products from AE by product category
 router.get('/products',productController.parseAllProducts); 
 
 
-router.get('/product',productController.getAllProducts);
+// router.get('/product',productController.getAllProducts);
 
-router.get('/productsInfo',productController.getProductInfo); 
+router.get('/update',productController.getProductsUpdate); 
+
 
 router.get('/product/:id',productController.getProductHistory);
 
  
-
-
-
-
-
- // router.get('/getProductsForDebug',productController.getProductsForDebug);
-
-
-// router.get('/productsHistory',productController.getProductsHistory);
-
-
-// router.get('/refferences',productController.getRefferences);
-// router.get('/productsInfo',productController.getProductsFullInfo);
-
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
