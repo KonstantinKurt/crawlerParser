@@ -18,6 +18,7 @@ const AliExpressSpider = require('aliexpress');
 
 const categoryRouter = require('./routes/categoryRouter.js');
 const productRouter = require('./routes/productRouter.js');
+const userRouter = require('./routes/userRouter.js');
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -25,25 +26,20 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use('/', categoryRouter);
 app.use('/', productRouter);
+app.use('/', userRouter);
 
 
 
-cron.schedule('* * 1 * *', () => {
+
+
+
+
+
+cron.schedule('* * * * Wednesday', () => {
     updateDB().then(() => {
         console.log('DataBase updated succsesfully!(1 hour cron)');
     });
 });
-
-
-
-
-
-
-
-
-
-
-
 app.get('/', (req, res) => {
     res.send('Crawler Parser');
 
